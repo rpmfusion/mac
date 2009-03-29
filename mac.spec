@@ -1,6 +1,6 @@
 Name:           mac
 Version:        3.99
-Release:        6.u4b5%{?dist}
+Release:        7.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
@@ -122,6 +122,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 3.99-7.u4b5
+- rebuild for new F11 features
+
 * Fri Mar 13 2009 kwizart < kwizart at gmail.com > - 3.99-6.u4b5
 - Add permission to redistribute for RPM Fusion. (bundled with -libs)
 - Fix for gcc44
