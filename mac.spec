@@ -1,6 +1,6 @@
 Name:           mac
 Version:        3.99
-Release:        9.u4b5%{?dist}
+Release:        10.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
@@ -122,6 +122,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Mar 12 2013 Nicolas Chauvet <kwizart@gmail.com> - 3.99-10.u4b5
+- https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Thu Mar 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 3.99-9.u4b5
 - Rebuilt for c++ ABI breakage
 
