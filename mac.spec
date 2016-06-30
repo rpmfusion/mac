@@ -1,6 +1,6 @@
 Name:           mac
 Version:        3.99
-Release:        11.u4b5%{?dist}
+Release:        12.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
@@ -10,12 +10,16 @@ Source0:        http://supermmx.org/resources/linux/mac/mac-%{version}-u4-b5.tar
 Source1:        mac-permission_to_redistribute.txt
 Patch0:         mac-3.99-u4-b5-gcc44.patch
 Patch1:         mac-3.99-u4-b5-analyse.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Patch2:         mac-3.99-u4-b5-gcc45.patch
 
 %ifarch i686 x86_64
 BuildRequires:  yasm
 %endif
+%if 0%{?fedora} > 22
+BuildRequires:  execstack
+%else
 BuildRequires:  prelink
+%endif
 
 Requires:  %{name}-libs = %{version}-%{release}
 
@@ -54,6 +58,7 @@ developing applications that use %{name}.
 %setup -q -n %{name}-%{version}-u4-b5
 %patch0 -p1 -b .gcc44
 %patch1 -p1 -b .an
+%patch2 -p1 -b .gcc45
 
 #Copy permission to redistribute
 cp -p %{SOURCE1} .
@@ -93,9 +98,6 @@ find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
 execstack -c $RPM_BUILD_ROOT%{_libdir}/libmac.so.2.0.0
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 
 %post libs -p /sbin/ldconfig
 
@@ -103,18 +105,15 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files
-%defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING NEWS README
 %{_bindir}/mac
 
 %files libs
-%defattr(-,root,root,-)
 %doc mac-permission_to_redistribute.txt
 %doc src/License.htm
 %{_libdir}/*.so.*
 
 %files devel
-%defattr(-,root,root,-)
 %doc TODO src/Readme.htm src/Credits.txt src/History.txt
 %{_includedir}/mac/
 %{_libdir}/*.so
@@ -122,6 +121,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 30 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.99-12.u4b5
+- Spec clean-up
+- Use execstrack instead of prelink on fedora 23 and later
+- Fix build with newer gcc
+
 * Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 3.99-11.u4b5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
