@@ -1,6 +1,6 @@
 Name:           mac
 Version:        3.99
-Release:        12.u4b5%{?dist}
+Release:        13.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
@@ -11,6 +11,7 @@ Source1:        mac-permission_to_redistribute.txt
 Patch0:         mac-3.99-u4-b5-gcc44.patch
 Patch1:         mac-3.99-u4-b5-analyse.patch
 Patch2:         mac-3.99-u4-b5-gcc45.patch
+Patch3:         mac-3.99-u4-b5-gcc6.patch
 
 %ifarch i686 x86_64
 BuildRequires:  yasm
@@ -59,6 +60,7 @@ developing applications that use %{name}.
 %patch0 -p1 -b .gcc44
 %patch1 -p1 -b .an
 %patch2 -p1 -b .gcc45
+%patch3 -p1 -b .gcc6
 
 #Copy permission to redistribute
 cp -p %{SOURCE1} .
@@ -121,6 +123,9 @@ execstack -c $RPM_BUILD_ROOT%{_libdir}/libmac.so.2.0.0
 
 
 %changelog
+* Fri Jul 01 2016 Leigh Scott <leigh123linux@googlemail.com> - 3.99-13.u4b5
+- patch for gcc-6
+
 * Thu Jun 30 2016 Nicolas Chauvet <kwizart@gmail.com> - 3.99-12.u4b5
 - Spec clean-up
 - Use execstrack instead of prelink on fedora 23 and later
