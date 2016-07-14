@@ -1,17 +1,16 @@
 Name:           mac
-Version:        3.99
-Release:        13.u4b5%{?dist}
+Version:        4.11
+Release:        1.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
 License:        Monkey's Audio Source Code License Agreement
 URL:            http://supermmx.org/linux/mac/
-Source0:        http://supermmx.org/resources/linux/mac/mac-%{version}-u4-b5.tar.gz
+# use debian multimedia source
+Source0:        ftp://ftp.deb-multimedia.org/pool/main/m/monkeys-audio/monkeys-audio_%{version}-u4-b5-s7.orig.tar.gz
 Source1:        mac-permission_to_redistribute.txt
-Patch0:         mac-3.99-u4-b5-gcc44.patch
-Patch1:         mac-3.99-u4-b5-analyse.patch
-Patch2:         mac-3.99-u4-b5-gcc45.patch
-Patch3:         mac-3.99-u4-b5-gcc6.patch
+Source2:        License.htm
+Patch0:         mac-4.11-u4-b5-s7-gcc6.patch
 
 %ifarch i686 x86_64
 BuildRequires:  yasm
@@ -56,14 +55,12 @@ developing applications that use %{name}.
 
 
 %prep
-%setup -q -n %{name}-%{version}-u4-b5
-%patch0 -p1 -b .gcc44
-%patch1 -p1 -b .an
-%patch2 -p1 -b .gcc45
-%patch3 -p1 -b .gcc6
+%setup -q -n monkeys-audio-%{version}-u4-b5-s7
+%patch0 -p1 -b .gcc6
 
 #Copy permission to redistribute
 cp -p %{SOURCE1} .
+cp -p %{SOURCE2} src/
 
 # Fix encoding issues:
 for txtfile in src/Credits.txt ; do
@@ -116,13 +113,17 @@ execstack -c $RPM_BUILD_ROOT%{_libdir}/libmac.so.2.0.0
 %{_libdir}/*.so.*
 
 %files devel
-%doc TODO src/Readme.htm src/Credits.txt src/History.txt
+%doc TODO src/Credits.txt src/History.txt
 %{_includedir}/mac/
 %{_libdir}/*.so
 
 
 
 %changelog
+* Thu Jul 14 2016 Leigh Scott <leigh123linux@googlemail.com> - 4.11-1.u4b5
+- fix bz4123
+- use monkeys-audio source from Debian multimedia
+
 * Fri Jul 01 2016 Leigh Scott <leigh123linux@googlemail.com> - 3.99-13.u4b5
 - patch for gcc-6
 
