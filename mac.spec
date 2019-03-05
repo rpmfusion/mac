@@ -12,6 +12,7 @@ Source1:        mac-permission_to_redistribute.txt
 Source2:        License.htm
 Patch0:         mac-4.11-u4-b5-s7-gcc6.patch
 
+BuildRequires:  gcc-c++
 %ifarch i686 x86_64
 BuildRequires:  yasm
 %endif
