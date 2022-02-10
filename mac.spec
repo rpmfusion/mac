@@ -1,6 +1,6 @@
 Name:           mac
 Version:        4.11
-Release:        12.u4b5%{?dist}
+Release:        13.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
@@ -121,6 +121,9 @@ execstack -c $RPM_BUILD_ROOT%{_libdir}/libmac.so.2.0.0
 
 
 %changelog
+* Thu Feb 10 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.11-13.u4b5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Wed Aug 04 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 4.11-12.u4b5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
