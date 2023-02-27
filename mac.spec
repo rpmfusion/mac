@@ -1,19 +1,26 @@
 Name:           mac
-Version:        9.04
-Release:        1%{?dist}
+Version:        4.11
+Release:        14.u4b5%{?dist}
 Summary:        Monkey's Audio Codec (MAC) utility
 
 Group:          Applications/Multimedia
 License:        Monkey's Audio Source Code License Agreement
-URL:            https://www.monkeysaudio.com/index.html
+URL:            http://supermmx.org/linux/mac/
 # use debian multimedia source
-Source0:        https://monkeysaudio.com/files/MAC_904_SDK.zip
+Source0:        ftp://ftp.deb-multimedia.org/pool/main/m/monkeys-audio/monkeys-audio_%{version}-u4-b5-s7.orig.tar.gz
 Source1:        mac-permission_to_redistribute.txt
-Source2:        https://www.monkeysaudio.com/license.html
+Source2:        License.htm
+Patch0:         mac-4.11-u4-b5-s7-gcc6.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  make
-BuildRequires:  python3-html2text
+%ifarch i686 x86_64
+BuildRequires:  yasm
+%endif
+%if 0%{?fedora} > 22
+BuildRequires:  execstack
+%else
+BuildRequires:  prelink
+%endif
 
 Requires:  %{name}-libs = %{version}-%{release}
 
@@ -49,41 +56,71 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup -c -n MAC_904_SDK
+%setup -q -n monkeys-audio-%{version}-u4-b5-s7
+%patch0 -p1 -b .gcc6
 
 #Copy permission to redistribute
 cp -p %{SOURCE1} .
-cp -p %{SOURCE2} .
+cp -p %{SOURCE2} src/
+
+# Fix encoding issues:
+for txtfile in src/Credits.txt ; do
+    iconv -f iso-8859-1 -t UTF8 $txtfile -o $txtfile.utf8
+    touch -r $txtfile $txtfile.utf8
+    mv -f $txtfile.utf8 $txtfile
+done
+
+# Disable CXXFLAGS override
+sed -i.cxxflags -e 's/ -O3 -Wall -pedantic -Wno-long-long//g' configure configure.in
+touch -r configure.in.cxxflags configure.in
+touch -r configure.cxxflags configure
 
 
 %build
-%make_build -C Source/Projects/NonWindows
+%configure --disable-static \
+%ifarch i686 x86_64
+  --enable-assembly=yes
+%endif
+
+
+# remove rpath from libtool
+sed -i.rpath 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i.rpath 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+
+
+make %{?_smp_mflags}
 
 
 %install
-%make_install prefix=%{_prefix} libdir=%{_libdir} -C Source/Projects/NonWindows
+rm -rf $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT INSTALL="install -p"
+find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
 
-# generate license
-html2text --ignore-links "license.html" | sed -n '/^## License$/,$p' >> LICENSE.md
+execstack -c $RPM_BUILD_ROOT%{_libdir}/libmac.so.2.0.0
+
+
+%post libs -p /sbin/ldconfig
+
+%postun libs -p /sbin/ldconfig
+
 
 %files
+%doc AUTHORS ChangeLog COPYING NEWS README
 %{_bindir}/mac
 
 %files libs
 %doc mac-permission_to_redistribute.txt
-%doc LICENSE.md
+%doc src/License.htm
 %{_libdir}/*.so.*
 
 %files devel
-%{_includedir}/MAC/
+%doc TODO src/Credits.txt src/History.txt
+%{_includedir}/mac/
 %{_libdir}/*.so
 
 
 
 %changelog
-* Mon Feb 27 2023 Leigh Scott <leigh123linux@gmail.com> - 9.04-1
-- Update to 9.04
-
 * Mon Aug 08 2022 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 4.11-14.u4b5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild and ffmpeg
   5.1
